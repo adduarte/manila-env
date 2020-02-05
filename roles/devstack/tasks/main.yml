@@ -50,7 +50,7 @@
     repo: https://opendev.org/openstack-dev/devstack
     dest: "{{ansible_env.HOME}}/devstack"
     update: no
-    version: "{{ devstack_branch }}"
+    version: "{{ devstack_ref }}"
 
 - name: Install ~/devstack/local.conf
   template:
@@ -58,6 +58,7 @@
     src: local.conf.j2
     mode: 0644
     owner: "{{ ansible_env.USER }}"
+
 
 # The CentOS python-setuptools is too old
 # for devstack and it will use its own version
@@ -67,6 +68,7 @@
 #  package:
 #    name: python-setuptools
 #    state: absent
+- pause:
 
 - name: run stack.sh to deploy manila
   command: ./stack.sh

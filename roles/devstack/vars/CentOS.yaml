@@ -4,3 +4,4 @@ distribution_required_packages:
   - python3-devel
   - ntp
   - qemu-img
+  - bridge-utils
