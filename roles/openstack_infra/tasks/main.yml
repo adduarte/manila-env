@@ -122,9 +122,9 @@
   tags:
      - provision_infra
 
-- name: launch devstack
+- name: deploy devstack host
   os_server:
-    name: devstack
+    name: "{{ devstack_host_name }}"
     state: present
     wait: yes
     auto_ip: yes
@@ -141,22 +141,25 @@
        - sed -i -e 's/#\?\(GSSAPICleanupCredentials\s*\).*$/\1 no/' /etc/ssh/sshd_config
        - printf "\nKexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256\nCiphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr\nMACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com\n" >> /etc/ssh/sshd_config
        - service sshd restart
-  register: devstack
+  register: devstack_host_info
   tags:
     - provision_devstack
 
-- name: add devstack to our ansible inventory
-  add_host: hostname="{{ devstack.server.public_v4 }}"
-            groups=cluster,devstack
+- name: add devstack host to our ansible inventory
+  add_host: hostname="{{ devstack_host_info.server.public_v4 }}"
+            groups=devstack
             ansible_ssh_private_key_file="{{private_key_file}}"
-            ansible_ssh_user=centos
+            ansible_ssh_user="{{ devstack_user }}"
+
 
 - name: Create local login script
-  template: src=login-devstack.sh.j2
-            dest=./login-devstack.sh
-            mode=0755
+  template:
+    src: login-devstack.sh.j2
+    dest: ./login-devstack.sh
+    mode: 0755
 
 - name: persist dynamic inventory to yml file
-  template: src=inventory.yml.j2
-            dest=inventory.yml
-            mode=0644
+  template:
+    src: devstack_host_inventory.yml.j2
+    dest: devstack_host_inventory.yml
+    mode: 0644

@@ -1,6 +1,6 @@
 - name: delete devstack
   os_server:
-    name: devstack
+    name: "{{ devstack_host_name }}"
     state: absent
     wait: yes
 - name: delete custom security group

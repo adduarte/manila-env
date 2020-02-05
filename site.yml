@@ -12,7 +12,7 @@
   tags:
   - provision_hosts
 
-- hosts: devstack
+- hosts: cluster_host
   gather_facts: false
   vars_files:
     - "global_vars.yml"
@@ -21,11 +21,11 @@
   tags:
   - prepare_cluster_hosts
 
-- hosts: devstack
+- hosts: devstack_host
   roles:
     - devstack
   tags:
-  - install_manila
+  - install_devstack
 
 - hosts: devstack
   roles:
